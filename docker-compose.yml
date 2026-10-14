@@ -1,0 +1,20 @@
+# Ollama runs on the host (it needs your models and ideally your GPU).
+services:
+  api:
+    build: ./backend
+    ports: ["8010:8010"]
+    environment:
+      OLLAMA_URL: http://host.docker.internal:11434
+      FRONTEND_ORIGIN: http://localhost:8080
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    volumes: ["docchat-data:/data"]
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8010
+    ports: ["8080:80"]
+    depends_on: [api]
+
+volumes:
+  docchat-data:
